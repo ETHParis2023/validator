@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@safe-global/safe-gateway-typescript-sdk": "^3.7.3",
     "@types/node": "^20.4.2",
     "ethers": "^5.7.2",
     "ts-node": "^10.9.1",

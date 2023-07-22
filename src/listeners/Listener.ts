@@ -9,6 +9,7 @@ export const listen = async (
   rpc: string,
   constract: `0x${string}`,
   safe: `0x${string}`,
+  successor: (to: `0x${string}`, amount: string) => Promise<void>,
 ) => {
   const provider = new ethers.providers.WebSocketProvider(rpc);
   const contract = new ethers.Contract(constract, TOKEN_ABI, provider);
@@ -16,5 +17,10 @@ export const listen = async (
   contract.on("Transfer", (src, dst, val) => {
     if (dst !== safe) return;
     console.log(chain, src, dst, val.toString());
+    successor(src, val.toString()).then(() => {
+      console.log(chain, src, dst, val.toString(), "done");
+    }).catch((e) => {
+      console.log(chain, src, dst, val.toString(), e);
+    });
   });
 };
