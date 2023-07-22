@@ -1,19 +1,84 @@
 import { ethers } from "ethers";
 import { WALLET } from "../secrets";
+import { signEip712 } from "../signers/Signer";
+import { generateSafeExecTransactionCalldata, generateTransferCalldata } from "../tx-generator";
+import { doBiconomyUsdcTransfer } from "../biconomy";
+import { NETWORK, NETWORK_TO_NODE, NETWORK_TO_SAFE, POLYGON_AA_MODULE, POLYGON_NODE, POLYGON_SAFE, TOKEN } from "../constants";
 
 const SAFE_ABI = [
   "function execTransaction(address to, uint256 value, bytes calldata data, uint8 operation, uint256 safeTxGas, uint256 baseGas, uint256 gasPrice, address gasToken, address refundReceiver, bytes signatures) external payable returns (bool success)",
+  "function nonce() external view returns (uint256)",
 ];
 
 
-export const send = async (
-  chain: string,
-  rpc: string,
-  token: `0x${string}`,
+export const sendUsdcUsingBcnmyPolygon = async (
+  fromChain: NETWORK,
   to: `0x${string}`,
-  safe: `0x${string}`,
   amount: string,
 ) => {
+  const provider = new ethers.providers.WebSocketProvider(POLYGON_NODE);
+  const wallet = new ethers.Wallet(WALLET.key, provider);
+  const contract = new ethers.Contract(POLYGON_SAFE, SAFE_ABI, wallet);
+
+  const [, fromDecimals] = TOKEN[fromChain];
+  const changeInDecimals = 6 - fromDecimals;
+  console.log({ changeInDecimals })
+  console.log({ amount })
+  if (changeInDecimals > 0) {
+    amount = (BigInt(amount) * BigInt(10 ** changeInDecimals)).toString();
+  }
+  if (changeInDecimals < 0) {
+    amount = (BigInt(amount) / BigInt(10 ** -changeInDecimals)).toString();
+  }
+  console.log({ amount })
+
+  const nonce = +await contract.nonce();
+  // console.log({ nonce })
+
+  const calldata = await generateSafeExecTransactionCalldata(to, amount, nonce);
+  // console.log({ calldata });
+
+  // const tx = await wallet.sendTransaction({
+  //   to: POLYGON_AA_MODULE,
+  //   data: calldata,
+  //   gasLimit: 2000000,
+  //   gasPrice: (await provider.getGasPrice()).mul(5).div(4),
+  // });
+
+  // console.log(tx.hash);
+
+  // const receipt = await tx.wait();
+
+  // console.log(receipt);
+  
+
+  await doBiconomyUsdcTransfer('Polygon', calldata);
+  
+
+
+};
+
+export const send = async (
+  fromChain: NETWORK,
+  chain: NETWORK,
+  to: `0x${string}`,
+  amount: string,
+) => {
+  const rpc = NETWORK_TO_NODE[chain];
+  const [token, decimals] = TOKEN[chain];
+  const [, fromDecimals] = TOKEN[fromChain];
+  const changeInDecimals = decimals - fromDecimals;
+  console.log({ changeInDecimals })
+  console.log({ amount })
+  if (changeInDecimals > 0) {
+    amount = (BigInt(amount) * BigInt(10 ** changeInDecimals)).toString();
+  }
+  if (changeInDecimals < 0) {
+    amount = (BigInt(amount) / BigInt(10 ** -changeInDecimals)).toString();
+  }
+  console.log({ amount })
+  
+  const safe = NETWORK_TO_SAFE[chain];
   const provider = new ethers.providers.WebSocketProvider(rpc);
   const wallet = new ethers.Wallet(WALLET.key, provider);
   const contract = new ethers.Contract(safe, SAFE_ABI, wallet);

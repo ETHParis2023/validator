@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 /src/secrets.ts
+/private-keys.txt

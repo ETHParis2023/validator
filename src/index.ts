@@ -1,29 +1,68 @@
-import { GNOSIS_NODE, GNOSIS_SAFE, GNOSIS_USDC, POLYGON_NODE, POLYGON_SAFE, POLYGON_USDC } from "./constants";
+import { ethers } from "ethers";
+import { GNOSIS_NODE, GNOSIS_SAFE, GNOSIS_USDC, NETWORK, NETWORKS, NETWORK_TO_NODE, NETWORK_TO_SAFE, POLYGON_NODE, POLYGON_SAFE, POLYGON_USDC, RECEIVERS_FLAT, RECEIVER_TO_NETWORK, TOKEN } from "./constants";
 import { listen } from "./listeners/Listener";
-import { send } from "./senders/Sender";
+import { send, sendUsdcUsingBcnmyPolygon } from "./senders/Sender";
+import { signEip712 } from "./signers/Signer";
+import { generateTransferCalldata } from "./tx-generator";
+
+const tokenSender = async () => {
+
+};
 
 const main = async () => {
-  // await send('Gnosis', GNOSIS_NODE, GNOSIS_USDC, '0x693f7243e7577A3845364F23d856349f15571856', GNOSIS_SAFE, '31');
+  // await doBiconomy();
+  // await sendUsdcUsingBcnmyPolygon(
+  //   POLYGON_NODE,
+  //   '0xeA5963C83b6E38d766EcF506f39A82E723Adc709',
+  //   POLYGON_SAFE,
+  //   '1',
+  // );
+
+  const listenPromises: Array<Promise<unknown>> = [];
+  for (const network of [process.env.NETWORK] as NETWORK[]) {
+    const WSS_RPC = NETWORK_TO_NODE[network];
+    // const provider = new ethers.providers.WebSocketProvider(WSS_RPC);
+    const [token, decimals] = TOKEN[network];
+    listenPromises.push(
+      listen(
+        network,
+        WSS_RPC,
+        token,
+        RECEIVERS_FLAT,
+        async (receiver: `0x${string}`, to: `0x${string}`, amount: string) => {
+          const destinationNetwork: NETWORK = RECEIVER_TO_NETWORK[receiver] as NETWORK;
+          // console.log(network, 'TO', destinationNetwork, receiver, to, amount);
+          if (destinationNetwork === 'Polygon') {
+            await sendUsdcUsingBcnmyPolygon(
+              network,
+              receiver,
+              amount,
+            );
+          } else {
+            console.log(
+              destinationNetwork,
+              NETWORK_TO_NODE[destinationNetwork],
+              TOKEN[destinationNetwork][0],
+              to,
+              NETWORK_TO_SAFE[destinationNetwork],
+              amount,
+            )
+            await send(
+              network,
+              destinationNetwork,
+              to,
+              amount,
+            );
+          }
+        },
+      )
+    );
+  }
+
   await Promise.all([
-    listen(
-      'Polygon',
-      POLYGON_NODE,
-      POLYGON_USDC,
-      POLYGON_SAFE,
-      async (to: `0x${string}`, amount: string) => {
-        await send('Gnosis', GNOSIS_NODE, GNOSIS_USDC, to, GNOSIS_SAFE, amount);
-      },
-    ),
-    listen(
-      'Gnosis',
-      GNOSIS_NODE,
-      GNOSIS_USDC,
-      GNOSIS_SAFE,
-      async (to: `0x${string}`, amount: string) => {
-        await send('Polygon', POLYGON_NODE, POLYGON_USDC, to, POLYGON_SAFE, amount);
-      },
-    ),
+    ...listenPromises,
   ]);
+  await new Promise((resolve) => setTimeout(resolve, 100000000));
 };
 
 main();

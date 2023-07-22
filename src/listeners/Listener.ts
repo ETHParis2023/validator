@@ -7,18 +7,37 @@ const TOKEN_ABI = [
 export const listen = async (
   chain: string,
   rpc: string,
-  constract: `0x${string}`,
-  safe: `0x${string}`,
-  successor: (to: `0x${string}`, amount: string) => Promise<void>,
+  _contract: `0x${string}`,
+  receivers: `0x${string}`[],
+  successor: (receiver: `0x${string}`, to: `0x${string}`, amount: string) => Promise<void>,
 ) => {
+  console.log('LISTEN', chain);
   const provider = new ethers.providers.WebSocketProvider(rpc);
-  const contract = new ethers.Contract(constract, TOKEN_ABI, provider);
+  const contract = new ethers.Contract(_contract, TOKEN_ABI, provider);
 
-  contract.on("Transfer", (src, dst, val) => {
-    if (dst !== safe) return;
-    console.log(chain, src, dst, val.toString());
-    successor(src, val.toString()).then(() => {
-      console.log(chain, src, dst, val.toString(), "done");
+  provider.on('error', (e) => {
+    console.log('PROVIDER ERROR', chain, e);
+  });
+  // provider.on('disconnect', (e) => {
+  //   console.log('PROVIDER DISCONNECT', chain, e);
+  // });
+
+  const hashes = new Set<string>();
+
+  contract.on("Transfer", (src, dst, val, { transactionHash }) => {
+    if (hashes.has(transactionHash)) {
+      return;
+    }
+    hashes.add(transactionHash);
+    if (chain === 'Polygon' && !receivers.includes(dst)) {
+      return;
+    }
+    console.log('TRANSFER DETECTED', chain, 'from:', src, 'to:', dst, 'amount:', val.toString());
+    if (!receivers.includes(dst)) {
+      return;
+    }
+    successor(dst, src, val.toString()).then(() => {
+      // console.log(chain, src, dst, val.toString(), "done");
     }).catch((e) => {
       console.log(chain, src, dst, val.toString(), e);
     });
