@@ -1,9 +1,6 @@
-import { ethers } from "ethers";
-import { GNOSIS_NODE, GNOSIS_SAFE, GNOSIS_USDC, NETWORK, NETWORKS, NETWORK_TO_NODE, NETWORK_TO_SAFE, POLYGON_NODE, POLYGON_SAFE, POLYGON_USDC, RECEIVERS_FLAT, RECEIVER_TO_NETWORK, TOKEN } from "./constants";
+import { NETWORK, NETWORK_TO_NODE, NETWORK_TO_SAFE, RECEIVERS_FLAT, RECEIVER_TO_NETWORK, TOKEN } from "./constants";
 import { listen } from "./listeners/Listener";
 import { send, sendUsdcUsingBcnmyPolygon } from "./senders/Sender";
-import { signEip712 } from "./signers/Signer";
-import { generateTransferCalldata } from "./tx-generator";
 
 const tokenSender = async () => {
 
