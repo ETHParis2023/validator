@@ -1,4 +1,4 @@
-import { CELO_NODE, ZKEVM_NODE } from "./secrets";
+import { CELO_NODE, ZKEVM_NODE, GNOSIS_NODE } from "./secrets";
 
 export const POLYGON_SAFE = '0xbb544Ee3a9adb4a0e1441f29A88BA2ec0f866ccA';
 export const POLYGON_AA_MODULE = '0x175d303d407763206B726b1Af0ea0A9518440c32';
@@ -12,7 +12,6 @@ export const CELO_CUSD = '0x765DE816845861e75A25fCA122bb6898B8B1282a';
 export const ZKEVM_USDT = '0x1E4a5963aBFD975d8c9021ce480b42188849D41d';
 
 export const POLYGON_NODE = 'wss://polygon-mainnet.g.alchemy.com/v2/IKV1Snx-bw7DIfA34x6RRFaY1rTWbvHB';
-export const GNOSIS_NODE = 'wss://rpc.gnosischain.com/wss';
 
 export type NETWORK = 'Polygon' | 'Gnosis' | 'Celo' | /*'ZkSync' |*/ 'ZkEvm';
 export const NETWORKS: NETWORK[] = ['Polygon', 'Gnosis', 'Celo', /*'ZkSync',*/ 'ZkEvm'];
