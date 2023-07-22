@@ -29,10 +29,10 @@ export const listen = async (
       return;
     }
     hashes.add(transactionHash);
-    if (chain === 'Polygon' && !receivers.includes(dst)) {
-      return;
-    }
-    console.log('TRANSFER DETECTED', chain, 'from:', src, 'to:', dst, 'amount:', val.toString());
+    // if (chain === 'Polygon' && !receivers.includes(dst)) {
+    //   return;
+    // }
+    // console.log('TRANSFER DETECTED', chain, 'from:', src, 'to:', dst, 'amount:', val.toString());
     if (!receivers.includes(dst)) {
       return;
     }
