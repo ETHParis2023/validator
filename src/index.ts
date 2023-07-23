@@ -29,6 +29,14 @@ const main = async () => {
         async (receiver: `0x${string}`, to: `0x${string}`, amount: string) => {
           const destinationNetwork: NETWORK = RECEIVER_TO_NETWORK[receiver] as NETWORK;
           // console.log(network, 'TO', destinationNetwork, receiver, to, amount);
+          console.log(
+            destinationNetwork,
+            NETWORK_TO_NODE[destinationNetwork],
+            TOKEN[destinationNetwork][0],
+            to,
+            NETWORK_TO_SAFE[destinationNetwork],
+            amount,
+          );
           if (destinationNetwork === 'Polygon') {
             await sendUsdcUsingBcnmyPolygon(
               network,
@@ -36,14 +44,6 @@ const main = async () => {
               amount,
             );
           } else {
-            console.log(
-              destinationNetwork,
-              NETWORK_TO_NODE[destinationNetwork],
-              TOKEN[destinationNetwork][0],
-              to,
-              NETWORK_TO_SAFE[destinationNetwork],
-              amount,
-            )
             await send(
               network,
               destinationNetwork,

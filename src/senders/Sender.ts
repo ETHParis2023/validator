@@ -23,7 +23,7 @@ export const sendUsdcUsingBcnmyPolygon = async (
   const [, fromDecimals] = TOKEN[fromChain];
   const changeInDecimals = 6 - fromDecimals;
   console.log({ changeInDecimals })
-  console.log({ amount })
+  // console.log({ amount })
   if (changeInDecimals > 0) {
     amount = (BigInt(amount) * BigInt(10 ** changeInDecimals)).toString();
   }
@@ -69,7 +69,7 @@ export const send = async (
   const [, fromDecimals] = TOKEN[fromChain];
   const changeInDecimals = decimals - fromDecimals;
   console.log({ changeInDecimals })
-  console.log({ amount })
+  // console.log({ amount })
   if (changeInDecimals > 0) {
     amount = (BigInt(amount) * BigInt(10 ** changeInDecimals)).toString();
   }
