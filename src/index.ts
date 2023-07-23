@@ -32,7 +32,7 @@ const main = async () => {
           if (destinationNetwork === 'Polygon') {
             await sendUsdcUsingBcnmyPolygon(
               network,
-              receiver,
+              to,
               amount,
             );
           } else {
