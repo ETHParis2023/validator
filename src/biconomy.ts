@@ -1,9 +1,9 @@
 import { IBundler, Bundler } from '@biconomy/bundler';
 import { ChainId, UserOperation } from "@biconomy/core-types";
 import { IPaymaster, BiconomyPaymaster, PaymasterMode } from '@biconomy/paymaster'
-import { BICONOMY_ENDPOINT, WALLET } from './secrets';
+import { BICONOMY_ENDPOINT, GNOSIS_NODE, WALLET } from './secrets';
 import { generateSafeExecTransactionCalldata, generateTransferCalldata } from './tx-generator';
-import { GNOSIS_AA_MODULE, GNOSIS_NODE, POLYGON_AA_MODULE, POLYGON_NODE } from './constants';
+import { GNOSIS_AA_MODULE, POLYGON_AA_MODULE, POLYGON_NODE } from './constants';
 import { ethers } from 'ethers';
 
 const paymaster = new BiconomyPaymaster({
