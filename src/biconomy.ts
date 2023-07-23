@@ -1,13 +1,13 @@
 import { IBundler, Bundler } from '@biconomy/bundler';
 import { ChainId, UserOperation } from "@biconomy/core-types";
 import { IPaymaster, BiconomyPaymaster, PaymasterMode } from '@biconomy/paymaster'
-import { BICONOMY_ENDPOINT, GNOSIS_NODE, WALLET } from './secrets';
+import { BICONOMY_ENDPOINT, GNOSIS_NODE, PAYMASTER, WALLET } from './secrets';
 import { generateSafeExecTransactionCalldata, generateTransferCalldata } from './tx-generator';
 import { GNOSIS_AA_MODULE, POLYGON_AA_MODULE, POLYGON_NODE } from './constants';
 import { ethers } from 'ethers';
 
 const paymaster = new BiconomyPaymaster({
-  paymasterUrl: 'https://paymaster.biconomy.io/api/v1/137/NrBC7OE8D.b487ef10-a191-4c10-a34e-a233a7d4ddf9',
+  paymasterUrl: PAYMASTER,
 });
 
 const entryPointAbi = [
